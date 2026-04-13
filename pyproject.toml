@@ -7,7 +7,7 @@ name = "voodoos"
 version = "0.1.0"
 description = "VOODOO OS — decision-first AI operating system starter"
 readme = "README.md"
-requires-python = ">=3.12"
+requires-python = ">=3.9"
 dependencies = [
   "fastapi>=0.115.0,<1.0.0",
   "uvicorn[standard]>=0.30.0,<1.0.0",
@@ -37,11 +37,11 @@ include = ["apps*", "packages*"]
 
 [tool.black]
 line-length = 100
-target-version = ["py312"]
+target-version = ["py39"]
 
 [tool.ruff]
 line-length = 100
-target-version = "py312"
+target-version = "py39"
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B"]
@@ -53,7 +53,7 @@ pythonpath = ["."]
 asyncio_mode = "auto"
 
 [tool.mypy]
-python_version = "3.12"
+python_version = "3.9"
 ignore_missing_imports = true
 warn_unused_configs = true
 check_untyped_defs = true
