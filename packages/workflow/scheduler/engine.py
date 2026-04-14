@@ -1,9 +1,11 @@
+from typing import Optional
+
 from packages.workflow.graph_runtime.models import WorkflowCheckpoint, WorkflowNode
 from packages.workflow.retries.policy import RetryPolicy
 
 
 class WorkflowScheduler:
-    def __init__(self, retry_policy: RetryPolicy | None = None) -> None:
+    def __init__(self, retry_policy: Optional[RetryPolicy] = None) -> None:
         self.retry_policy = retry_policy or RetryPolicy()
 
     def run(
