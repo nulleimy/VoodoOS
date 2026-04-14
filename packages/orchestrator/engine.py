@@ -9,6 +9,7 @@ from packages.memory.episodic.repository import EpisodicMemoryRepository
 from packages.observability.logging.event_logger import EventLogger
 from packages.observability.logging.models import AuditEvent
 from packages.orchestrator.models import OrchestratorRequest, OrchestratorResponse
+from packages.orchestrator.router import IntelligentRouter
 from packages.runtime.actions.builtin import echo_action
 from packages.runtime.actions.models import ActionRequest
 from packages.runtime.actions.registry import ActionRegistry
@@ -25,6 +26,7 @@ class VoodooOrchestrator:
         self.workflow_runtime = WorkflowRuntime()
         self.event_logger = EventLogger()
         self.permission_engine = PermissionEngine()
+        self.router = IntelligentRouter()
 
         self.action_registry = ActionRegistry()
         self.action_registry.register("echo_action", echo_action)
@@ -42,6 +44,8 @@ class VoodooOrchestrator:
         )
 
     def run(self, request: OrchestratorRequest) -> OrchestratorResponse:
+        routing = self.router.route(request.prompt)
+
         decision = self.decision_engine.evaluate(
             DecisionContext(
                 intent=request.prompt,
@@ -51,36 +55,44 @@ class VoodooOrchestrator:
             )
         )
 
-        llm_response = self.llm_router.route(
-            LLMRequest(
-                prompt=request.prompt,
-                requires_privacy=request.requires_privacy,
+        llm_provider = "none"
+        if "llm" in routing.selected_steps:
+            llm_response = self.llm_router.route(
+                LLMRequest(
+                    prompt=request.prompt,
+                    requires_privacy=request.requires_privacy,
+                )
             )
-        )
+            llm_provider = llm_response.provider
 
-        checkpoint = self.workflow_runtime.execute(
-            workflow_id="wf-orchestrator-001",
-            nodes=[
-                WorkflowNode(node_id="n1", node_type="decision"),
-                WorkflowNode(node_id="n2", node_type="llm_call"),
-                WorkflowNode(node_id="n3", node_type="execution"),
-            ],
-        )
+        workflow_state = "skipped"
+        if "workflow" in routing.selected_steps:
+            checkpoint = self.workflow_runtime.execute(
+                workflow_id="wf-orchestrator-001",
+                nodes=[
+                    WorkflowNode(node_id="n1", node_type="decision"),
+                    WorkflowNode(node_id="n2", node_type="workflow"),
+                ],
+            )
+            workflow_state = checkpoint.state
 
-        execution_result = self.task_executor.execute(
-            ActionRequest(
-                action_name="echo_action",
-                payload={"prompt": request.prompt},
-                actor_id=request.actor_id,
-            ),
-            self.policy,
-        )
+        execution_status = "skipped"
+        if "execution" in routing.selected_steps:
+            execution_result = self.task_executor.execute(
+                ActionRequest(
+                    action_name="echo_action",
+                    payload={"prompt": request.prompt},
+                    actor_id=request.actor_id,
+                ),
+                self.policy,
+            )
+            execution_status = execution_result.status
 
         record = EpisodicMemoryRecord(
             record_id="mem-orchestrator-001",
             scope=MemoryScope(user_id="u1", project_id="p1", agent_id=request.actor_id),
             summary=f"Orchestrator processed: {request.prompt}",
-            tags=["orchestrator"],
+            tags=["orchestrator", routing.mode],
         )
         self.memory_repo.add(record)
 
@@ -91,18 +103,21 @@ class VoodooOrchestrator:
                 target="voodoo_orchestrator",
                 status="complete",
                 details={
-                    "provider": llm_response.provider,
-                    "workflow_state": checkpoint.state,
-                    "execution_status": execution_result.status,
+                    "routing_mode": routing.mode,
+                    "selected_steps": routing.selected_steps,
+                    "llm_provider": llm_provider,
+                    "workflow_state": workflow_state,
+                    "execution_status": execution_status,
                 },
             )
         )
 
         return OrchestratorResponse(
             recommendation=decision.recommendation,
-            llm_provider=llm_response.provider,
-            workflow_state=checkpoint.state,
-            execution_status=execution_result.status,
+            llm_provider=llm_provider,
+            workflow_state=workflow_state,
+            execution_status=execution_status,
             memory_record_id=record.record_id,
-            requires_human_approval=decision.requires_human_approval,
+            requires_human_approval=routing.requires_human_approval
+            or decision.requires_human_approval,
         )
