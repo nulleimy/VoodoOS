@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import Any
+from typing import Any, Optional
 
 
 @dataclass
@@ -12,6 +12,6 @@ class WorkflowNode:
 @dataclass
 class WorkflowCheckpoint:
     workflow_id: str
-    last_completed_node: str | None = None
+    last_completed_node: Optional[str] = None
     state: str = "idle"
     metadata: dict[str, Any] = field(default_factory=dict)
