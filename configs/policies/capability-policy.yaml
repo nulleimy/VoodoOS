@@ -1,0 +1,9 @@
+agent_id: system
+allowed_capabilities:
+  - read_memory
+  - write_memory
+  - run_workflow
+  - call_llm
+requires_human_approval_for:
+  - send_email
+  - delete_records
