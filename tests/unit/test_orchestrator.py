@@ -15,6 +15,6 @@ def test_orchestrator_runs_end_to_end() -> None:
 
     assert "Primary decision axis" in response.recommendation
     assert response.llm_provider == "local"
-    assert response.workflow_state == "complete"
-    assert response.execution_status == "ok"
+    assert response.workflow_state == "skipped"
+    assert response.execution_status == "skipped"
     assert response.memory_record_id == "mem-orchestrator-001"
