@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import Any, Dict
+from typing import Any
 
 
 @dataclass
@@ -7,7 +7,7 @@ class OrchestratorRequest:
     prompt: str
     requires_privacy: bool = False
     actor_id: str = "system"
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -18,3 +18,5 @@ class OrchestratorResponse:
     execution_status: str
     memory_record_id: str
     requires_human_approval: bool
+    routing_mode: str = "standard"
+    selected_steps: list[str] = field(default_factory=list)

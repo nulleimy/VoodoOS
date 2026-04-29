@@ -1,11 +1,11 @@
-from typing import List, Optional
+from typing import Optional
 
 from packages.memory.episodic.models import EpisodicMemoryRecord
 
 
 class EpisodicMemoryRepository:
     def __init__(self) -> None:
-        self._records: List[EpisodicMemoryRecord] = []
+        self._records: list[EpisodicMemoryRecord] = []
 
     def add(self, record: EpisodicMemoryRecord) -> None:
         self._records.append(record)
@@ -16,5 +16,5 @@ class EpisodicMemoryRepository:
                 return record
         return None
 
-    def list_all(self) -> List[EpisodicMemoryRecord]:
+    def list_all(self) -> list[EpisodicMemoryRecord]:
         return list(self._records)

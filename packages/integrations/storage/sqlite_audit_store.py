@@ -1,7 +1,6 @@
 import json
 import sqlite3
 from pathlib import Path
-from typing import List
 
 from packages.observability.logging.models import AuditEvent
 
@@ -48,7 +47,7 @@ class SQLiteAuditStore:
             )
             conn.commit()
 
-    def list_all(self) -> List[AuditEvent]:
+    def list_all(self) -> list[AuditEvent]:
         with self._connect() as conn:
             rows = conn.execute(
                 """

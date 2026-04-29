@@ -1,16 +1,16 @@
 from dataclasses import dataclass
-from typing import List, Optional
+from typing import Optional
 
 
 @dataclass
 class RoutingDecision:
     mode: str
-    selected_steps: List[str]
+    selected_steps: list[str]
     requires_human_approval: bool = False
 
 
 class IntelligentRouter:
-    def route(self, prompt: str, risk_flags: Optional[List[str]] = None) -> RoutingDecision:
+    def route(self, prompt: str, risk_flags: Optional[list[str]] = None) -> RoutingDecision:
         risk_flags = risk_flags or []
 
         lowered = prompt.lower()

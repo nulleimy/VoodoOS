@@ -120,4 +120,6 @@ class VoodooOrchestrator:
             memory_record_id=record.record_id,
             requires_human_approval=routing.requires_human_approval
             or decision.requires_human_approval,
+            routing_mode=routing.mode,
+            selected_steps=routing.selected_steps,
         )

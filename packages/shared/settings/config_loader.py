@@ -1,11 +1,11 @@
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any
 
 import yaml
 
 
 class ConfigLoader:
-    def load_yaml(self, path: str) -> Dict[str, Any]:
+    def load_yaml(self, path: str) -> dict[str, Any]:
         file_path = Path(path)
         if not file_path.exists():
             raise FileNotFoundError(f"Config file not found: {path}")
