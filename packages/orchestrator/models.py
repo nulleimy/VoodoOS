@@ -18,5 +18,8 @@ class OrchestratorResponse:
     execution_status: str
     memory_record_id: str
     requires_human_approval: bool
+    run_id: str = ""
+    trace_id: str = ""
+    created_at: str = ""
     routing_mode: str = "standard"
     selected_steps: list[str] = field(default_factory=list)
