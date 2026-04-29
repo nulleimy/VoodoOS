@@ -1,18 +1,17 @@
 import json
 from pathlib import Path
-from typing import List
 
 from packages.observability.logging.models import AuditEvent
 
 
 class EventLogger:
     def __init__(self) -> None:
-        self._events: List[AuditEvent] = []
+        self._events: list[AuditEvent] = []
 
     def log(self, event: AuditEvent) -> None:
         self._events.append(event)
 
-    def list_events(self) -> List[AuditEvent]:
+    def list_events(self) -> list[AuditEvent]:
         return list(self._events)
 
     def export_json(self, path: str) -> None:

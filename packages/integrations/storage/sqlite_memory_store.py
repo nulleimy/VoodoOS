@@ -1,6 +1,5 @@
 import sqlite3
 from pathlib import Path
-from typing import List
 
 from packages.memory.episodic.models import EpisodicMemoryRecord, MemoryScope
 
@@ -50,7 +49,7 @@ class SQLiteMemoryStore:
             )
             conn.commit()
 
-    def list_all(self) -> List[EpisodicMemoryRecord]:
+    def list_all(self) -> list[EpisodicMemoryRecord]:
         with self._connect() as conn:
             rows = conn.execute(
                 """
@@ -60,7 +59,7 @@ class SQLiteMemoryStore:
                 """
             ).fetchall()
 
-        results: List[EpisodicMemoryRecord] = []
+        results: list[EpisodicMemoryRecord] = []
         for row in rows:
             results.append(
                 EpisodicMemoryRecord(

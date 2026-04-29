@@ -1,11 +1,11 @@
-from typing import List, Optional
+from typing import Optional
 
 from packages.observability.logging.models import DecisionTrace
 
 
 class DecisionTraceStore:
     def __init__(self) -> None:
-        self._traces: List[DecisionTrace] = []
+        self._traces: list[DecisionTrace] = []
 
     def add(self, trace: DecisionTrace) -> None:
         self._traces.append(trace)
@@ -16,5 +16,5 @@ class DecisionTraceStore:
                 return trace
         return None
 
-    def list_all(self) -> List[DecisionTrace]:
+    def list_all(self) -> list[DecisionTrace]:
         return list(self._traces)
