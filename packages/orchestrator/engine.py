@@ -1,3 +1,6 @@
+from datetime import datetime, timezone
+from uuid import uuid4
+
 from packages.core.decision_engine.engine import DecisionEngine
 from packages.core.decision_engine.models import DecisionContext
 from packages.governance.permissions.engine import PermissionEngine
@@ -44,6 +47,10 @@ class VoodooOrchestrator:
         )
 
     def run(self, request: OrchestratorRequest) -> OrchestratorResponse:
+        run_id = f"run-{uuid4().hex}"
+        trace_id = f"trace-{uuid4().hex}"
+        created_at = datetime.now(timezone.utc).isoformat()
+
         routing = self.router.route(request.prompt)
 
         decision = self.decision_engine.evaluate(
@@ -103,6 +110,9 @@ class VoodooOrchestrator:
                 target="voodoo_orchestrator",
                 status="complete",
                 details={
+                    "run_id": run_id,
+                    "trace_id": trace_id,
+                    "created_at": created_at,
                     "routing_mode": routing.mode,
                     "selected_steps": routing.selected_steps,
                     "llm_provider": llm_provider,
@@ -120,6 +130,9 @@ class VoodooOrchestrator:
             memory_record_id=record.record_id,
             requires_human_approval=routing.requires_human_approval
             or decision.requires_human_approval,
+            run_id=run_id,
+            trace_id=trace_id,
+            created_at=created_at,
             routing_mode=routing.mode,
             selected_steps=routing.selected_steps,
         )

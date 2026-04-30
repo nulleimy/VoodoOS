@@ -11,6 +11,9 @@ class OrchestratorRunRequest(BaseModel):
 
 
 class OrchestratorRunResponse(BaseModel):
+    run_id: str
+    trace_id: str
+    created_at: str
     recommendation: str
     llm_provider: str
     workflow_state: str
@@ -19,3 +22,22 @@ class OrchestratorRunResponse(BaseModel):
     requires_human_approval: bool
     routing_mode: str
     selected_steps: list[str]
+
+
+class OrchestratorRunDetailResponse(BaseModel):
+    run_id: str
+    trace_id: str
+    created_at: str
+    actor_id: str
+    prompt: str
+    requires_privacy: bool
+    metadata: dict[str, Any]
+    recommendation: str
+    llm_provider: str
+    workflow_state: str
+    execution_status: str
+    memory_record_id: str
+    requires_human_approval: bool
+    routing_mode: str
+    selected_steps: list[str]
+    audit_events: list[dict[str, Any]]

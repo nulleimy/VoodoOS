@@ -1,6 +1,7 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 
 from apps.api.app.schemas.orchestrator import (
+    OrchestratorRunDetailResponse,
     OrchestratorRunRequest,
     OrchestratorRunResponse,
 )
@@ -20,3 +21,11 @@ def run_orchestrator(payload: OrchestratorRunRequest) -> OrchestratorRunResponse
         metadata=payload.metadata,
     )
     return OrchestratorRunResponse(**result)
+
+
+@router.get("/runs/{run_id}", response_model=OrchestratorRunDetailResponse)
+def get_orchestrator_run(run_id: str) -> OrchestratorRunDetailResponse:
+    result = service.get_run(run_id)
+    if result is None:
+        raise HTTPException(status_code=404, detail="Orchestrator run not found")
+    return OrchestratorRunDetailResponse(**result)
